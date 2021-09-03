@@ -1,0 +1,27 @@
+stages:
+    - build
+    - test
+
+build:me:
+    stage: build
+    tags:
+    - platform-compile-java-client
+    script:
+    - echo "Building project"
+    - mvn package
+    artifacts:
+        name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+        paths:
+        - target/RestAssuredExample-1.0-SNAPSHOT-jar-with-dependencies.jar
+        when: on_success
+        expire_in: 1 day
+
+test:me:
+    stage: test
+    tags:
+    - platform-compile-java-client
+    dependencies:
+    - build:me
+    script:
+    - echo "Testing project by executing target"
+    - java -cp target/RestAssuredExample-1.0-SNAPSHOT-jar-with-dependencies.jar com.doug.rest.RestAssuredExample
